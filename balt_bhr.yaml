@@ -1,0 +1,1050 @@
+entityDefinitions:
+  historicalbhr:
+    fqn: "bhr.report"
+    entitySetName: "baltimore_city_pd_app_bhr"
+    propertyDefinitions:
+      nc.SubjectIdentification:
+        type: "nc.SubjectIdentification"
+        column: "ConsumerID"
+      bhr.dispatchReason:
+        type: "bhr.dispatchReason"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X1.Reason"
+          string: "Behaviral Crisis"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Behavioral Crisis"
+          transformsIfFalse:
+          - !<transforms.ColumnTransform>
+            column: "X1.Reason"
+      bhr.complaintNumber:
+        type: "bhr.complaintNumber"
+        column: "X2.CC"
+      bhr.companionOffenseReport:
+        type: "bhr.companionOffenseReport"
+        column: "X3.Companion"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          target: ["Yes", "No", "FALSE"]
+          goal: [true, false, false]
+          ignoreCase: true
+      bhr.incident:
+        type: "bhr.incident"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X4.Crime"
+          string: "Emergecny Petition"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Emergency Petition"
+          transformsIfFalse:
+          - !<transforms.ColumnTransform>
+            column: "X4.Crime"
+      bhr.locationOfIncident:
+        type:  "bhr.locationOfIncident"
+        column: "X5.Address"
+      bhr.unit:
+        type: "bhr.unit"
+        column: "X6.Unit"
+      bhr.postOfOccurrence:
+        type: "bhr.postOfOccurrence"
+        column: "X7.Post"
+      bhr.cadNumber:
+        type: "bhr.cadNumber"
+        column: "X8.CAD"
+        transforms:
+        - !<transforms.ParseIntTransform> {}
+      bhr.onView:
+        type: "bhr.onView"
+        column: "X9.OnView"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          target: ["Yes", "No", "FALSE"]
+          goal: [true, false, true]
+          ignoreCase: true
+      bhr.datetimeOccurred:
+        type: "bhr.datetimeOccurred"
+        column: "X10.Occurred"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          target: ["hours", "hrs", "hors", "Hrs", ".", "hr.s", "hr", "h", "s"]
+          goal: ["", "", "", "", "", "", "", "", "", ""]
+          partial: true
+        - !<transforms.DateTimeTransform>
+          pattern: ["MM/dd/yy HHmm", "M/dd/yy HHmm", "MM/d/yy HHmm", "M/d/yy HHmm", "MM/dd/yy", "MM-dd-yy HHmm", "MM/dd/yy HHmm ", 
+          "M/dd/yy HHmm ", "MM/d/yy HHmm ", "M/d/yy HHmm ", "MM-dd-yy HHmm ", "M-dd-yy HHmm ", "MM/dd/yyyy HHmm ", "MM/ddyy HHmm ", 
+          "M-d-yy HHmm ", "M-d-yy HHmm"]
+        # - !<transforms.TimeTransform>
+        #   pattern: ["MM/dd/YY HHmm 'hrs'", "M/d/YY HHmm 'hrs'", "M/ddYY HHmm 'hrs'", "M/dYY HHmm'hrs'", "M/d/YY HHmm 'hrs.'", "M/d/YY HHmm 'Hrs'", "M/d/YY HHmm", "M/d/YY HHmm 'HRS'",
+        #     "MM/dd/YY HHmm 'hrs.'", "MM/dd/YY HHmm 'hr.'", "MM/dd/YY HHmm 'h'", "M/d/YY HHmm'hrs'", "MM/dd/YY HHmm'hrs'", "MM/dd/YY HHmm'hrs.'", "MM/d/YY HHmm'hrs.'", "MM/dd/YY HHmm 'hors'",
+        #     "MM/dd/YY/ HHmm 'hrs.'", "MM/dd/YY HHmm", "MM/dd/YY HHmm 'Hrs.'", "MM/dd/YY HHmm 'hr.s'", "M/d/YY HHmm 'hr'", "M/d/YY HHmm 'hours'", "M-d-YY HHmm'hr'", "MM/dd/YY HHmm'hr.'", "MM/dd/YY HHmm'h'",
+        #     "M-d-YY HHmm 'hrs'", "M-d-YY HHmm 'hrs.'", "M-d-YY HHmm'hrs'", "MM/dd/YY HHmm 'hours'", "MM/ddYY HHmm 'hrs'", "M/dYY HHmm'hrs'", "MM/dd/YYYY HHmm 'Hrs'", "MM/dd/YY"] 
+      bhr.datetimeReported:
+        type: "bhr.datetimeReported"
+        column: "X11.Reported"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          target: ["hours","hrs", "hors", "Hrs", ".", "hr.s", "hr", "h", "s"]
+          goal: ["", "", "", "", "", "", "", "", ""]
+          partial: true
+        - !<transforms.DateTimeTransform>
+          pattern: ["MM/dd/yy HHmm", "M/dd/yy HHmm", "MM/d/yy HHmm", "M/d/yy HHmm", "MM/dd/yy", "MM-dd-yy HHmm", "MM/dd/yy HHmm ", 
+          "M/dd/yy HHmm ", "MM/d/yy HHmm ", "M/d/yy HHmm ", "MM-dd-yy HHmm ", "M-dd-yy HHmm ", "MM/dd/yyyy HHmm ", "MM/ddyy HHmm ", 
+          "M-d-yy HHmm ", "M-d-yy HHmm"]
+      bhr.address:
+        type: "bhr.address"
+        column: "X13a.Address"
+      bhr.phone:
+        type: "bhr.phone"
+        column: "X13b.Phone"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          target: ["(",")","-"," "]
+          goal: ["","","",""]
+          partial: true
+          ignoreCase: false
+      bhr.militaryStatus:
+        type: "bhr.militaryStatus"
+        column: "X14.Military"
+      bhr.gender:
+        type: "bhr.gender"
+        column: "X14a.Gender"
+      bhr.age:
+        type: "bhr.age"
+        column: "X14c.Age"
+        transforms:
+        - !<transforms.ParseIntTransform> {}
+      bhr.homeless:
+        type: "bhr.homeless"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X13a.Address"
+          string: "Homeless"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: true
+          - !<transforms.ParseBoolTransform> {}
+          transformsIfFalse:
+          - !<transforms.BooleanContainsTransform>
+            column: "X15.Homeless"
+            string: "Yes"
+            transformsIfTrue:
+            - !<transforms.ValueTransform>
+              value: true
+            - !<transforms.ParseBoolTransform> {}
+            transformsIfFalse:
+            - !<transforms.ValueTransform>
+              value: false
+            - !<transforms.ParseBoolTransform> {}
+      bhr.homelessLocation:
+        type: "bhr.homelessLocation"
+        column: "X15a.Location" 
+      bhr.drugsAlcohol:
+        type: "bhr.drugsAlcohol"
+        column: "X16.Substances"
+      bhr.drugType:
+        type: "bhr.drugType"
+        column: "X16a.Drugs"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          target: ["--Select--"]
+          goal: [""]
+          ignoreCase: false
+      bhr.prescribedMedication:
+        type: "bhr.prescribedMedication"
+        column: "X17.Meds"
+      bhr.takingMedication:
+        type: "bhr.takingMedication"
+        column: "X17a.Taking"
+      bhr.prevPsychAdmission:
+        type: "bhr.prevPsychAdmission"  
+        column: "X18.PrevPsych"
+      
+      bhr.selfDiagnosis1:
+        type: "bhr.selfDiagnosis"
+        column: "X19.SelfDiags"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 0
+      bhr.selfDiagnosis2:
+        type: "bhr.selfDiagnosis"
+        column: "X19.SelfDiags"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 1
+      bhr.selfDiagnosis3:
+        type: "bhr.selfDiagnosis"
+        column: "X19.SelfDiags"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 2
+      bhr.selfDiagnosis4:
+        type: "bhr.selfDiagnosis"
+        column: "X19.SelfDiags"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 3
+      bhr.selfDiagnosis5:
+        type: "bhr.selfDiagnosis"
+        column: "X19.SelfDiags"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 4
+      bhr.selfDiagnosis6:
+        type: "bhr.selfDiagnosis"
+        column: "X19.SelfDiags"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 5
+      bhr.selfDiagnosisOther:
+        type: "bhr.selfDiagnosisOther"
+        transforms: 
+        - !<transforms.ConcatTransform>
+          columns: ["X19.Other", "X19b.Describe"]
+          separator: " - "
+      bhr.armedWithWeapon:
+        type: "bhr.armedWithWeapon"
+        transforms:
+        - !<transforms.BooleanIsNullTransform>
+          column: "X20a.WeaponType"
+          transformsIfTrue:
+          - !<transforms.BooleanContainsTransform>
+            column: "X20.Weapon"
+            string: "Yes"
+            transformsIfTrue:
+            - !<transforms.ValueTransform>
+              value: true
+            transformsIfFalse:
+            - !<transforms.ValueTransform>
+              value: false
+          transformsIfFalse:
+          - !<transforms.ValueTransform>
+            value: true
+      bhr.armedWeaponType1:
+        type: "bhr.armedWeaponType"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X20a.WeaponType"
+          string: "Knife"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "knife"
+      bhr.armedWeaponType2:
+        type: "bhr.armedWeaponType"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X20a.WeaponType"
+          string: "Razor"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "razor"
+      bhr.armedWeaponType3:
+        type: "bhr.armedWeaponType"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X20a.WeaponType"
+          string: "pepper spray"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "pepper spray"
+      bhr.armedWeaponType4:
+        type: "bhr.armedWeaponType"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X20a.WeaponType"
+          string: "Razorblades"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "razor"
+      bhr.armedWeaponType5:
+        type: "bhr.armedWeaponType"
+        transforms:
+        - !<transforms.BooleanRegexTransform>
+          column: "X20a.WeaponType"
+          pattern: "\\b(?i)(Knife|Razor|pepper spray|Razorblades)\\b"
+          transformsIfFalse:
+          - !<transforms.ColumnTransform>
+            column: "X20a.WeaponType"
+      bhr.accessToWeapons:
+        type: "bhr.accessToWeapons"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X21.Access"
+          string: "Yes"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: true
+          transformsIfFalse:
+          - !<transforms.ValueTransform>
+            value: false
+      bhr.accessibleWeaponType1:
+        type: "bhr.accessibleWeaponType"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X21a.WeaponType"
+          string: "Knife"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "knife"
+      bhr.accessibleWeaponType2:
+        type: "bhr.accessibleWeaponType"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X21a.WeaponType"
+          string: "Razor"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "razor"
+      bhr.accessibleWeaponType3:
+        type: "bhr.accessibleWeaponType"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X21a.WeaponType"
+          string: "pepper spray"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "pepper spray"
+      bhr.accessibleWeaponType4:
+        type: "bhr.accessibleWeaponType"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X21a.WeaponType"
+          string: "Razorblades"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Razorblades"
+      bhr.accessibleWeaponType5:
+        type: "bhr.accessibleWeaponType"
+        transforms:
+        - !<transforms.BooleanRegexTransform>
+          column: "X21a.WeaponType"
+          pattern: "\\b(?i)(Knife|Razor|pepper spray|Razorblades)\\b"
+          transformsIfFalse:
+          - !<transforms.ColumnTransform>
+            column: "X21a.WeaponType"
+      bhr.observedBehaviors1:
+        type: "bhr.observedBehaviors"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X22.Behaviors"
+          string: "Disorientation/Confusion"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Disorientation/Confusion"
+      bhr.observedBehaviors2:
+        type: "bhr.observedBehaviors"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X22.Behaviors"
+          string: "Abnormal behavior/appearance (neglect self care)"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Abnormal behavior/appearance (neglect self care)"
+      bhr.observedBehaviors3:
+        type: "bhr.observedBehaviors"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X22.Behaviors"
+          string: "Hearing Voices/Hallucinating"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Hearing Voices/Hallucinating"
+      bhr.observedBehaviors4:
+        type: "bhr.observedBehaviors"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X22.Behaviors"
+          string: "Anxious/Excited/Agitated"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Anxious/Excited/Agitated"
+      bhr.observedBehaviors5:
+        type: "bhr.observedBehaviors"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X22.Behaviors"
+          string: "Depressed mood"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Depressed mood"
+      bhr.observedBehaviors6:
+        type: "bhr.observedBehaviors"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X22.Behaviors"
+          string: "Paranoid or suspicious"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Paranoid or suspicious"
+      bhr.observedBehaviors7:
+        type: "bhr.observedBehaviors"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X22.Behaviors"
+          string: "Self-mutilation"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Self-mutilation" 
+      bhr.observedBehaviors8:
+        type: "bhr.observedBehaviors"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X22.Behaviors"
+          string: "Threatening/Violent towards others"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Threatening/Violent towards others"
+      bhr.observedBehaviors9:
+        type: "bhr.observedBehaviors"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X22.Behaviors"
+          string: "Other:"
+          ignoreCase: true
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Other"
+      bhr.observedBehaviorsOther:
+        type: "bhr.observedBehaviorsOther"
+        column: "X22a.Other"
+      bhr.emotionalState1:
+        type: "bhr.emotionalState"
+        column: "X22b.EmotionalState"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 0
+      bhr.emotionalState2:
+        type: "bhr.emotionalState"
+        column: "X22b.EmotionalState"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 1
+      bhr.emotionalState3:
+        type: "bhr.emotionalState"
+        column: "X22b.EmotionalState"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 2
+      bhr.emotionalState4:
+        type: "bhr.emotionalState"
+        column: "X22b.EmotionalState"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 3
+      bhr.emotionalState5:
+        type: "bhr.emotionalState"
+        column: "X22b.EmotionalState"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 4
+      bhr.emotionalState6:
+        type: "bhr.emotionalState"
+        column: "X22b.EmotionalState"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 5
+      bhr.emotionalState7:
+        type: "bhr.emotionalState"
+        column: "X22b.EmotionalState"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 6
+      bhr.emotionalState8:
+        type: "bhr.emotionalState"
+        column: "X22b.EmotionalState"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 7
+      bhr.emotionalStateOther:
+        type: "bhr.emotionalStateOther"
+        transforms: 
+        - !<transforms.ConcatTransform>
+          columns: ["X22c.Other", "X22d.Describe"]
+          separator: " - "     
+      bhr.photosTakenOf:
+        type: "bhr.photosTakenOf"
+        column: "X23.Photos" 
+      bhr.injuries1:
+        type: "bhr.injuries"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X24.Injuries"
+          string: "Abrasions"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Abrasions"
+      bhr.injuries2:
+        type: "bhr.injuries"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X24.Injuries"
+          string: "Other:"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Other"
+      bhr.injuries3:
+        type: "bhr.injuries"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X24.Injuries"
+          string: "Bruises"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Bruises"
+      bhr.injuries4:
+        type: "bhr.injuries"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X24.Injuries"
+          string: "Concussion"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Concussion"
+      bhr.injuries5:
+        type: "bhr.injuries"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X24.Injuries"
+          string: "Fractures"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Fractures"
+      bhr.injuries6:
+        type: "bhr.injuries"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X24.Injuries"
+          string: "Complaints of Pain"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Complaints of Pain"
+      bhr.injuriesOther:
+        type: "bhr.injuriesOther"
+        column: "X24a.Other"
+      bhr.suicidal:
+        type: "bhr.suicidal"
+        column: "X25.Suicidal"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          target: ["Yes", "No"]
+          goal: [true, false]
+          ignoreCase: true
+      bhr.suicidalActions1:
+        type: "bhr.suicidalActions"
+        column: "X25a.Type"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 0
+      bhr.suicidalActions2:
+        type: "bhr.suicidalActions"
+        column: "X25a.Type"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 1
+      bhr.suicidalActions3:
+        type: "bhr.suicidalActions"
+        column: "X25a.Type"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 2
+      bhr.suicidalActions4:
+        type: "bhr.suicidalActions"
+        column: "X25a.Type"
+        transforms:
+        - !<transforms.SplitTransform>
+          separator: " "
+          index: 3
+      bhr.suicideAttemptMethod:
+        type: "bhr.suicideAttemptMethod"
+        column: "X26.Method"
+      bhr.suicideAttemptMethodOther:
+        type: "bhr.suicideAttemptMethodOther"
+        column: "X26a.Other"
+      bhr.complainantName:
+        type: "bhr.complainantName"
+        column: "X27.Complainant"
+      bhr.complainantAddress:
+        type: "bhr.complainantAddress"
+        column: "X27a.Address"
+      bhr.complainantConsumerRelationship:
+        type: "bhr.complainantConsumerRelationship"
+        column: "X27b.Relationship"
+      bhr.complainantPhone:
+        type: "bhr.complainantPhone"
+        column: "X27c.Phone"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          target: ["(", ")", "-", " "]
+          goal: ["","","",""]
+          partial: true
+          ignoreCase: false
+      bhr.disposition1:
+        type: "bhr.disposition"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28.Disposition"
+          string: "EP"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "EP"
+      bhr.disposition2:
+        type: "bhr.disposition"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28.Disposition"
+          string: "Information/Referral"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Information and Referral"
+      bhr.disposition3:
+        type: "bhr.disposition"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28.Disposition"
+          string: "Information and Referral"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Information and Referral"
+      bhr.disposition4:
+        type: "bhr.disposition"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28.Disposition"
+          string: "BCRI"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "BCRI"
+      bhr.disposition5:
+        type: "bhr.disposition"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28.Disposition"
+          string: "Arrest"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Arrest"
+      bhr.disposition6:
+        type: "bhr.disposition"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28.Disposition"
+          string: "Voluntary ER Intake"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Voluntary ER Intake"
+      bhr.disposition7:
+        type: "bhr.disposition"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28.Disposition"
+          string: "LEAD"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "LEAD"
+      bhr.disposition8:
+        type: "bhr.disposition"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28.Disposition"
+          string: "Criminal Citation"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Criminal Citation"
+      bhr.disposition9:
+        type: "bhr.disposition"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28.Disposition"
+          string: "Civil Citation"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Civil Citation"
+      bhr.provider:
+        type: "bhr.disposition"        
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28a.Provider"
+          string: "Contacted or Referred to Current Treatment Provider"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Contacted or Referred to Current Treatment Provider"
+      bhr.hospitalTransport:
+        type: "bhr.hospitalTransport"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28b.Hospital"
+          string: "Yes"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: true
+          transformsIfFalse:
+          - !<transforms.ValueTransform>
+            value: false
+      bhr.hospital:
+        type: "bhr.hospital"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X28c.HospitalName"
+          string: "--Select One--"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: ""
+          transformsIfFalse:
+          - !<transforms.ColumnTransform>
+            column: "X28c.HospitalName"
+      bhr.deescalationTechniques1:
+        type: "bhr.deescalationTechniques"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X29.Deescalation"
+          string: "Verbalization"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Verbalization"
+      bhr.deescalationTechniques2:
+        type: "bhr.deescalationTechniques"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X29.Deescalation"
+          string: "Handcuffs"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Handcuffs"
+      bhr.deescalationTechniques3:
+        type: "bhr.deescalationTechniques"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X29.Deescalation"
+          string: "Leg Restraints"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Leg Restraints"
+      bhr.deescalationTechniques4:
+        type: "bhr.deescalationTechniques"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X29.Deescalation"
+          string: "Taser"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Taser"
+      bhr.deescalationTechniques5:
+        type: "bhr.deescalationTechniques"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X29.Deescalation"
+          string: "Arrest Control (hands/feet)"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Arrest Control (hands/feet)"
+      bhr.deescalationTechniques6:
+        type: "bhr.deescalationTechniques"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X29.Deescalation"
+          string: "Other"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Other"
+      bhr.deescalationTechniquesOther:
+        type: "bhr.deescalationTechniquesOther"
+        transforms: 
+        - !<transforms.ConcatTransform>
+          columns: ["X29a.Other", "X29b.Describe"]
+          separator: " - "  
+      bhr.specializedResourcesCalled1:
+        type: "bhr.specializedResourcesCalled"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X30.Specialized"
+          string: "BCRI/Mobile Crisis"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "BCRI/Mobile Crisis"
+      bhr.specializedResourcesCalled2:
+        type: "bhr.specializedResourcesCalled"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X30.Specialized"
+          string: "CIT Officer"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "CIT Officer"
+      bhr.specializedResourcesCalled3:
+        type: "bhr.specializedResourcesCalled"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X30.Specialized"
+          string: "CRT Unit"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "CRT Unit"
+      bhr.specializedResourcesCalled4:
+        type: "bhr.specializedResourcesCalled"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X30.Specialized"
+          string: "ESU"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "ESU"
+      bhr.specializedResourcesCalled5:
+        type: "bhr.specializedResourcesCalled"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X30.Specialized"
+          string: "SWAT"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "SWAT"
+      bhr.specializedResourcesCalled6:
+        type: "bhr.specializedResourcesCalled"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X30.Specialized"
+          string: "Negotiation Team"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Negotiation Team"
+      bhr.specializedResourcesCalled7:
+        type: "bhr.specializedResourcesCalled"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X30.Specialized"
+          string: "Homeless Outreach"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "Homeless Outreach"
+      bhr.incidentNarrative:
+        type: "bhr.incidentNarrative"
+        column: "X31.Narrative"
+      bhr.officerName:
+        type: "bhr.officerName"
+        column: "X32.Officer"
+      bhr.officerSeqID:
+        type: "bhr.officerSeqID"
+        column: "X34.SEQ"
+      bhr.officerInjuries:
+        type: "bhr.officerInjuries"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          column: "X35.Injuries"
+          target: ["None", "none", "NONE", "nONE", "N/A", "NA", "N?A", "Scratch on right hand", "unknown", "UNK", "scrape left arm"] 
+          goal: ["None", "None", "None", "None", "NA", "NA", "NA", "Scratch on right hand", "Unknown", "Unknown", "scrape left arm"]
+      bhr.officerCertification1:
+        type: "bhr.officerCertification"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X36.Certification"   
+          string: "CRT Unit"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "CRT Unit"
+      bhr.officerCertification2:
+        type: "bhr.officerCertification"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X36.Certification"   
+          string: "CIT"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "CIT"
+      bhr.officerCertification1:
+        type: "bhr.officerCertification"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X36.Certification"   
+          string: "BEST"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "BEST"
+      bhr.officerCertification1:
+        type: "bhr.officerCertification"
+        transforms:
+        - !<transforms.BooleanContainsTransform>
+          column: "X36.Certification"   
+          string: "N/A"
+          transformsIfTrue:
+          - !<transforms.ValueTransform>
+            value: "N/A"
+      bhr.supervisor:
+        type: "bhr.supervisor"
+        column: "X37.Supervisor" 
+      bhr.supervisorID:
+        type: "bhr.supervisorID"
+        column: "X37a.SEQ"
+      bhr.race:
+        type: "bhr.race"
+        column: "X14b.Race"
+        transforms: 
+        - !<transforms.ReplaceTransform>
+          target: ["Asian", "White", "Black", "Pac. Island", "Middle East"]
+          goal: ["asian", "white", "black", "pacisland", "white"]
+    name: "historicalbhr"
+    currentSync: true
+
+  people:
+    fqn: "general.person"
+    entitySetName: "baltimore_city_pd_app_people"
+    propertyDefinitions:
+      nc.SubjectIdentification:
+        type:  "nc.SubjectIdentification" 
+        transforms: 
+        - !<transforms.ConcatTransform>
+          columns: ["ConsumerID", "nc.SubjectIdentification"]
+          separator: " - "  
+      nc.PersonRace:
+        type: "nc.PersonRace"
+        column: "X14b.Race"
+        transforms: 
+        - !<transforms.ReplaceTransform>
+          target: ["Asian", "White", "Black", "Pac. Island", "Middle East"]
+          goal: ["asian", "white", "black", "pacisland", "white"]
+      nc.PersonSuffix:
+        type: "nc.PersonSuffix"
+        column: "suffix"
+      nc.PersonBirthDate:
+        type: "nc.PersonBirthDate"
+        column: "X14d.DOB"
+        transforms:
+        - !<transforms.DateTransform>
+          pattern: ["MM/dd/yy","M/dd/yy","MM/d/yy","M/d/yy"]
+          # pattern: ["MM/dd/YY"]
+      nc.PersonSurName:
+        type: "nc.PersonSurName"
+        column: "lastname"
+      nc.PersonMiddleName:
+        type: "nc.PersonMiddleName"
+        transforms:
+        - !<transforms.BooleanRegexTransform>
+          column: "X13.Name"
+          pattern: "\\b(?i)(Jr.|Jr|III)\\b"
+          transformsIfTrue:
+          - !<transforms.ColumnTransform>
+            column: "X13.Name"
+          - !<transforms.SplitTransform>
+            separator: ' '
+            index: 2
+            ifMoreThan: 4
+          transformsIfFalse:
+          - !<transforms.ColumnTransform>
+            column: "X13.Name"  
+          - !<transforms.SplitTransform>
+            separator: ' '
+            index: 1
+            ifMoreThan: 3
+      nc.PersonGivenName:
+        type: "nc.PersonGivenName"
+        column: "firstname"
+      nc.PersonSex:
+        type: "nc.PersonSex"
+        column: "X14a.Gender"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          target: ["Male", "Female", "Fem", ""]
+          goal: ["M", "F", "F", ""]
+          ignoreCase: false
+          partial: true
+    name: "people"
+    currentSync: true
+
+  followup:
+    fqn: "bhr.followup"
+    entitySetName: "baltimore_city_pd_app_followup"
+    propertyDefinitions:
+      bhr.dateReported:
+        type: "bhr.dateReported"
+        column: "bhr.dateReported"
+        transforms:
+        - !<transforms.ReplaceTransform>
+          target: ["hrs", "hors", "Hrs", ".", "hr.s", "hr", "h", "s"]
+          goal: ["", "", "", "", "", "", "", ""]
+          partial: true
+        - !<transforms.DateTimeTransform>
+          pattern: ["M/dd/yy", "MM/dd/yy HHmm", "M/dd/yy HHmm", "MM/d/yy HHmm", "M/d/yy HHmm", "MM/dd/yy", "MM-dd-yy HHmm", "MM/dd/yy HHmm ", "M/dd/yy HHmm ", "MM/d/yy HHmm ", "M/d/yy HHmm ", "MM-dd-yy HHmm ", "M-dd-yy HHmm ", "MM/dd/yyyy HHmm ", "MM/ddyy HHmm ", "M-d-yy HHmm ", "M-d-yy HHmm"]
+      #   - !<transforms.DateTimeAsDateTransform>
+      #     pattern: ["MM/dd/YY HHmm 'hrs'", "M/d/YY HHmm 'hrs'", "M/dYY HHmm'hrs'", "MM/dd/YY HHmm 'hors'", "MM/dd/YY HHmm 'Hrs'", "MM/dd/YY HHmm 'hrs.'",
+      #       "MM/dd/YY/ HHmm 'hrs.'", "MM/dd/YY HHmm 'hr.'", "MM/dd/YY HHmm 'h'", "MM/dd/YY HHmm'hrs'", "MM/dd/YY HHmm'hrs.'",
+      #       "MM/dd/YY HHmm", "MM/dd/YY HHmm 'Hrs.'", "MM/dd/YY HHmm 'hr.s'", "MM/dd/YY HHmm 'hr'", "MM-dd-YY HHmm'hr'", "MM/dd/YY HHmm'hr.'", "MM/dd/YY HHmm'h'",
+      #       "MM-dd-YY HHmm 'hrs'", "MM-dd-YY HHmm 'hrs.'", "MM-dd-YY HHmm'hrs'", "MM/dd/YY HHmm 'hours'", "MM/ddYY HHmm 'hrs'", "MM/dd/YYYY", "MM/dd/YY"]
+      bhr.complaintNumber:
+        type: "bhr.complaintNumber"
+        column: "bhr.complaintNumber"
+      bhr.officerName:
+        type: "bhr.officerName"
+        column: "bhr.officerName"
+      bhr.officerSeqID:
+        type: "bhr.officerSeqID"
+        column: "bhr.officerSeqID"
+      health.staff:
+        type: "health.staff"
+        column: "health.staff"
+      bhr.followupreason:
+        type: "bhr.followupreason"
+        column: "bhr.followupreason"
+      event.comments:
+        type: "event.comments"
+        column: "event.comments"
+    name: "followup"
+    currentSync: true
+
+
+associationDefinitions:
+  appearsin1:
+    fqn: "general.appearsin"
+    entitySetName: "baltimore_city_pd_app_appearsin"
+    src: "people"
+    dst: "historicalbhr"
+    propertyDefinitions:
+      general.stringid:
+        type: "general.stringid"
+        column: "X2.CC"
+    name: "appearsin1"
+    currentSync: true
+    
+  appearsin2:
+    fqn: "general.appearsin"
+    entitySetName: "baltimore_city_pd_app_appearsin"
+    src: "people"
+    dst: "followup"
+    propertyDefinitions:
+      general.stringid:
+        type: "general.stringid"
+        column: "X2.CC"
+    name: "appearsin2"
+    currentSync: true
+    
